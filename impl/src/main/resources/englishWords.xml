@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <bean id="serviceProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:config/configuration.properties</value>
+                <value>file:config/configuration.properties</value>
+            </list>
+        </property>
+        <property name="ignoreResourceNotFound" value="true"/>
+    </bean>
+
+    <!--<context:property-override location="classpath:override.properties"/>-->
+
+    <bean id="propertyPlaceholderConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties" ref="serviceProps"/>
+        <property name="fileEncoding" value="UTF-8"/>
+    </bean>
+
+    <bean id="resourceReader" class="slice.impl.resources.MultithreadResourceReader">
+        <property name="threadCount" value="${threadCount}"/>
+    </bean>
+
+    <bean class="slice.impl.spring.services.IndexWordServiceImpl">
+        <property name="pathToResources" value="${directory}"/>
+        <property name="textResourceReader" ref="resourceReader"/>
+    </bean>
+
+    <context:component-scan base-package="slice.impl.spring.services"/>
+
+
+</beans>
